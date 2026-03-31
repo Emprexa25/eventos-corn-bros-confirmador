@@ -881,7 +881,7 @@
                       `El cliente ha marcado su punto exacto en el mapa. ¡Revisar link de Google Maps y confirmar disponibilidad!\n\n` +
                       `--- ACCIÓN REQUERIDA ---\n` +
                       `✅ Verifica el depósito y confirma aquí:\n` +
-                      `https://eventos-corn-bros.netlify.app/admin-confirmar.html?nombre=${encodeURIComponent(nombre)}&fecha=${fechaRaw}&hora=${encodeURIComponent(horaInicio)}&paquete=${encodeURIComponent(nombrePaquete)}&piezas=${personasParam}&total=${total.toFixed(2)}&anticipo=${(total/2).toFixed(2)}&lugar=${encodeURIComponent(lugarNombre + ' ' + lugarColonia)}`;
+                      `https://emprexa25.github.io/eventos-corn-bros-confirmador/admin-confirmar.html?nombre=${encodeURIComponent(nombre)}&fecha=${fechaRaw}&hora=${encodeURIComponent(horaInicio)}&paquete=${encodeURIComponent(nombrePaquete)}&piezas=${personasParam}&total=${total.toFixed(2)}&anticipo=${(total/2).toFixed(2)}&lugar=${encodeURIComponent(lugarNombre + ' ' + lugarColonia)}`;
             
             const btnWa = document.getElementById('btn-whatsapp-book');
             btnWa.href = `https://wa.me/526141909200?text=${encodeURIComponent(msg)}`;
