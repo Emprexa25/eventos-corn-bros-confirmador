@@ -128,7 +128,6 @@
             text-align: center;
             max-width: 480px;
         }
-        /* Pre-fill visual */
         .prefilled { border-color: var(--verde) !important; background: #e8f5e9 !important; }
     </style>
 </head>
@@ -155,7 +154,7 @@
     </div>
 
     <!-- PANEL PRINCIPAL (oculto hasta autenticar) -->
-    <div id="main-panel" style="display:none;width:100%;display:none;">
+    <div id="main-panel" style="display:none;width:100%;">
     <div class="logo-title">🌽 CORN BROS</div>
     <span class="badge">Panel Interno — Confirmar Evento</span>
 
@@ -251,21 +250,24 @@
     <hr class="divider">
     <p class="hint">Este panel es de uso exclusivo del equipo Corn Bros.<br>No compartir con clientes.</p>
 
-    </div> <!-- cierre main-panel -->
+    </div>
 
     <script>
+        // ── CONFIGURACIÓN GLOBAL ──────────────────────────────────────────
         const PANEL_PASSWORD = 'cornbros2026';
+        const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbwi1oOGv0oCXDD6xylV1WRQdxfnajK8L0TYYcRplmEQ88ynLqrCJ1qCQRI5UoIQouxa/exec';
 
+        // ── LOGIN ─────────────────────────────────────────────────────────
         function verificarAcceso() {
             const pass = document.getElementById('login-pass').value;
             if (pass === PANEL_PASSWORD) {
                 document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('main-panel').style.display = 'flex';
-                document.getElementById('main-panel').style.flexDirection = 'column';
-                document.getElementById('main-panel').style.alignItems = 'center';
-                document.getElementById('main-panel').style.gap = '1.5rem';
-                document.getElementById('main-panel').style.padding = '2rem 1rem';
-                // Pre-llenar campos desde URL
+                const panel = document.getElementById('main-panel');
+                panel.style.display = 'flex';
+                panel.style.flexDirection = 'column';
+                panel.style.alignItems = 'center';
+                panel.style.gap = '1.5rem';
+                panel.style.padding = '2rem 1rem';
                 llenarDesdeURL();
             } else {
                 document.getElementById('login-error').style.display = 'block';
@@ -274,6 +276,7 @@
             }
         }
 
+        // ── PRE-LLENAR DESDE URL ──────────────────────────────────────────
         function llenarDesdeURL() {
             const p = new URLSearchParams(window.location.search);
             const campos = {
@@ -296,11 +299,7 @@
             }
         }
 
-        
-       const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbwi1oOGv0oCXDD6xylV1WRQdxfnajK8L0TYYcRplmEQ88ynLqrCJ1qCQRI5UoIQouxa/exec';
-
-        // Pre-llenado manejado por llenarDesdeURL() después del login
-
+        // ── STATUS ────────────────────────────────────────────────────────
         function mostrarStatus(msg, tipo) {
             const box = document.getElementById('status-box');
             box.className = 'status-box status-' + tipo;
@@ -309,45 +308,19 @@
             box.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
-       try {
-    const url = WEBAPP_URL + '?accion=confirmar' + objectToParams(datos);
-    const resp = await fetch(url, { redirect: 'follow', mode: 'no-cors' });
-    // no-cors no devuelve JSON, asumimos éxito si no hay error
-    mostrarStatus(
-        '✅ <strong>¡Evento confirmado!</strong><br>' +
-        '📅 Agendado en Google Calendar<br>' +
-        '📊 Registrado en Google Sheets<br>' +
-        '📧 Confirmación enviada al cliente',
-        'ok'
-    );
-} catch(e) {
-    mostrarStatus('❌ Sin conexión. Verifica internet e intenta de nuevo.', 'error');
-}
-
- async function cancelarEvento() {
-    const datos = recogerDatos(true);
-    if (!datos) return;
-    mostrarStatus('⏳ Registrando cancelación...', 'load');
-    try {
-        const url = WEBAPP_URL + '?accion=cancelar' + objectToParams(datos);
-        const resp = await fetch(url, { redirect: 'follow', mode: 'no-cors' });
-        mostrarStatus('🚫 Evento marcado como cancelado en Sheets.', 'ok');
-    } catch(e) {
-        mostrarStatus('❌ Sin conexión.', 'error');
-    }
-}
+        // ── RECOGER DATOS DEL FORMULARIO ──────────────────────────────────
         function recogerDatos(soloRequeridos = false) {
-            const nombre  = document.getElementById('f-nombre').value.trim();
-            const fecha   = document.getElementById('f-fecha').value;
-            const hora    = document.getElementById('f-hora').value;
-            const paquete = document.getElementById('f-paquete').value;
-            const piezas  = document.getElementById('f-piezas').value;
-            const total   = document.getElementById('f-total').value;
-            const lugar   = document.getElementById('f-lugar').value.trim();
-            const notas   = document.getElementById('f-notas').value.trim();
-            const anticipo= document.getElementById('f-anticipo').value;
-            const resp    = document.getElementById('f-responsable').value;
-            const email   = document.getElementById('f-email').value.trim();
+            const nombre   = document.getElementById('f-nombre').value.trim();
+            const fecha    = document.getElementById('f-fecha').value;
+            const hora     = document.getElementById('f-hora').value;
+            const paquete  = document.getElementById('f-paquete').value;
+            const piezas   = document.getElementById('f-piezas').value;
+            const total    = document.getElementById('f-total').value;
+            const lugar    = document.getElementById('f-lugar').value.trim();
+            const notas    = document.getElementById('f-notas').value.trim();
+            const anticipo = document.getElementById('f-anticipo').value;
+            const resp     = document.getElementById('f-responsable').value;
+            const email    = document.getElementById('f-email').value.trim();
 
             if (!nombre || !fecha || !hora) {
                 mostrarStatus('⚠️ Nombre, fecha y hora son obligatorios.', 'error');
@@ -356,11 +329,47 @@
             return { nombre, fecha, hora, paquete, piezas, total, lugar, notas, anticipo, responsable: resp, email };
         }
 
+        // ── CONVERTIR OBJETO A PARÁMETROS URL ────────────────────────────
         function objectToParams(obj) {
             return Object.entries(obj)
-                .map(([k,v]) => '&' + k + '=' + encodeURIComponent(v))
+                .map(([k, v]) => '&' + k + '=' + encodeURIComponent(v))
                 .join('');
+        }
+
+        // ── CONFIRMAR EVENTO ──────────────────────────────────────────────
+        async function confirmarEvento() {
+            const datos = recogerDatos();
+            if (!datos) return;
+            mostrarStatus('⏳ Agendando evento y notificando...', 'load');
+            try {
+                const url = WEBAPP_URL + '?accion=confirmar' + objectToParams(datos);
+                await fetch(url, { redirect: 'follow', mode: 'no-cors' });
+                mostrarStatus(
+                    '✅ <strong>¡Evento confirmado!</strong><br>' +
+                    '📅 Agendado en Google Calendar<br>' +
+                    '📊 Registrado en Google Sheets<br>' +
+                    '📧 Confirmación enviada al cliente',
+                    'ok'
+                );
+            } catch(e) {
+                mostrarStatus('❌ Sin conexión. Verifica internet e intenta de nuevo.', 'error');
+            }
+        }
+
+        // ── CANCELAR EVENTO ───────────────────────────────────────────────
+        async function cancelarEvento() {
+            const datos = recogerDatos(true);
+            if (!datos) return;
+            mostrarStatus('⏳ Registrando cancelación...', 'load');
+            try {
+                const url = WEBAPP_URL + '?accion=cancelar' + objectToParams(datos);
+                await fetch(url, { redirect: 'follow', mode: 'no-cors' });
+                mostrarStatus('🚫 Evento marcado como cancelado en Sheets.', 'ok');
+            } catch(e) {
+                mostrarStatus('❌ Sin conexión.', 'error');
+            }
         }
     </script>
 </body>
 </html>
+
